@@ -1,0 +1,30 @@
+{
+    "name": "proxy_swap",
+    "version": "0.0.1",
+    "license": "MIT",
+    "scripts": {
+        "start": "blueprint run",
+        "build": "blueprint build",
+        "test": "jest",
+        "scaffold": "blueprint scaffold"
+    },
+    "devDependencies": {
+        "@ton/ton": "^13.5.1",
+        "@types/jest": "^29.5.0",
+        "@types/node": "^20.2.5",
+        "jest": "^29.5.0",
+        "prettier": "^3.0.2",
+        "ts-jest": "^29.0.5",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.1.6"
+    },
+    "dependencies": {
+        "@ton/blueprint": "^0.13.0",
+        "@ton/core": "^0.53.0",
+        "@ton/crypto": "^3.2.0",
+        "@ton/sandbox": "^0.13.1",
+        "@ton/test-utils": "^0.4.0",
+        "blueprint-scaffold": "^1.0.4"
+    },
+    "packageManager": "yarn@1.22.19"
+}
