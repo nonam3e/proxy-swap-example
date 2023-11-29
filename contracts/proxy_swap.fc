@@ -1,11 +1,14 @@
 #include "imports/stdlib.fc";
 
 {-
+dedust_params:
+dedust_address: MsgAddress
+pool_address: MsgAddress
+= DedustParams;
 storage:
 owner: MsgAddress
 jetton_wallet: MsgAddress
-dedust_address: MsgAddress
-pool_address: MsgAddress
+_: ^DedustParams
 forward_amount: Coins
 = Storage;
 -}
