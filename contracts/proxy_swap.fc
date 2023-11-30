@@ -17,6 +17,8 @@ const int op::transfer_jetton        = 0x0f8a7ea5;
 const int op::transfer_notification  = 0x7362d09c;
 const int op::dedust_swap            = 0xe3a0d482;
 const int const::gas = 60000000;
+const int const::min_swap_price = 300000000;
+const int const::one_ton = 1000000000;
 
 int addr_none?(slice addr) asm "b{00} PUSHSLICE SDEQ";
 
@@ -41,9 +43,9 @@ int addr_none?(slice addr) asm "b{00} PUSHSLICE SDEQ";
     send_msg(jetton_wallet, ton_val, mode, msg);
 }
 
-cell create_dedust_payload(slice recipient_address, slice referal_address, slice pool_address) inline {
+cell create_dedust_payload(slice recipient_address, slice referal_address, slice pool_address, int amount) inline {
     cell params = begin_cell().store_uint(0, 32).store_slice(recipient_address).store_slice(referal_address).store_uint(0,2).end_cell();
-    return begin_cell().store_uint(op::dedust_swap, 32).store_slice(pool_address).store_uint(0,6).store_ref(params).end_cell();
+    return begin_cell().store_uint(op::dedust_swap, 32).store_slice(pool_address).store_uint(0,1).store_coins(muldiv(const::min_swap_price, amount, const::one_ton)).store_uint(0, 1).store_ref(params).end_cell();
 }
 
 _ load_data() inline {
@@ -84,11 +86,11 @@ _ load_data() inline {
     }
     if (op == op::transfer_notification) {
         var(query_id, amount, sender_jetton) = (in_msg_body~load_uint(64), in_msg_body~load_coins(), in_msg_body~load_msg_addr());
-        if ((~ equal_slices(sender_address, jetton_wallet)) |( msg_value < (forward_amount + const::gas))) {
+        if ((~ equal_slices(sender_address, jetton_wallet)) | ( msg_value < (forward_amount + const::gas))) {
             send_jettons_without_payload(jetton_wallet, 0, 64, query_id, amount, sender_jetton, sender_jetton);
         }
         else {
-            cell swap_body = create_dedust_payload(sender_jetton, owner, pool_address);
+            cell swap_body = create_dedust_payload(sender_jetton, owner, pool_address, amount);
             send_jettons(jetton_wallet, 0, 64, query_id, amount, dedust_address, sender_jetton, forward_amount, swap_body);
         }
         return ();

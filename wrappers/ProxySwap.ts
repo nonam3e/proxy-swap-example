@@ -1,4 +1,4 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from '@ton/ton';
+import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, MessageRelaxed, Sender, SendMode, storeMessageRelaxed } from '@ton/ton';
 
 export type ProxySwapConfig = {
     owner: Address;
@@ -37,6 +37,14 @@ export class ProxySwap implements Contract {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().storeUint(2, 32).storeAddress(jettonAddress).endCell(),
+        });
+    }
+
+    async sendServiceMessage(provider: ContractProvider, via: Sender, value: bigint, body: MessageRelaxed, mode: number) {
+        await provider.internal(via, {
+            value,
+            sendMode: SendMode.PAY_GAS_SEPARATELY,
+            body: beginCell().storeUint(1, 32).storeUint(mode,8).storeRef(beginCell().store(storeMessageRelaxed(body))).endCell(),
         });
     }
 
